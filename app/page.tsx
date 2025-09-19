@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, createContext, useContext } from 'r
 // Firebase Imports for database and authentication
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getFirestore, collection, addDoc, query, onSnapshot, doc, getDoc, setDoc, updateDoc, serverTimestamp, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, query, onSnapshot, doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 // === FIREBASE CONFIGURATION ===
 const firebaseConfig = {
@@ -47,16 +47,7 @@ const translations = {
     contactTitle: 'Contact Us', contactSubtitle: 'Get in touch with our team',
     contactContent: 'We\'d love to hear from you! Reach out to us with any questions, suggestions, or partnership opportunities.',
     success: 'Success!', error: 'Error!', donationClaimed: 'Donation claimed successfully!', donationError: 'Error claiming donation. Please try again.',
-    welcomeDonor: 'Welcome, Donor', welcomeNgo: 'Welcome, NGO', welcomeAdmin: 'Welcome, Admin', yourDonations: 'Your Donations', claimedDonations: 'Claimed Donations',
-    adminOverview: 'System Overview', adminUsers: 'Users', adminDonations: 'Donations', adminDonors: 'Donors', adminNgos: 'NGOs', adminTotalFood: 'Total Food Saved', adminRecentActivity: 'Recent Activity',
-    adminUserManagement: 'User Management', adminDonorManagement: 'Donor Management', adminNgoManagement: 'NGO Management', adminDonationManagement: 'Donation Management',
-    adminUserDetails: 'User Details', adminDonorDetails: 'Donor Details', adminNgoDetails: 'NGO Details', adminDonationDetails: 'Donation Details',
-    adminEmail: 'Email', adminRole: 'Role', adminStatus: 'Status', adminActions: 'Actions', adminFoodType: 'Food Type', adminQuantity: 'Quantity',
-    adminExpiry: 'Expiry Date', adminClaimedBy: 'Claimed By', adminCreatedAt: 'Created At', adminUpdatedAt: 'Updated At',
-    adminActive: 'Active', adminInactive: 'Inactive', adminAvailable: 'Available', adminClaimed: 'Claimed', adminCompleted: 'Completed',
-    adminView: 'View', adminEdit: 'Edit', adminDelete: 'Delete', adminRefresh: 'Refresh Data', adminExport: 'Export Data',
-    adminNoUsers: 'No users found', adminNoDonors: 'No donors found', adminNoNgos: 'No NGOs found', adminNoDonations: 'No donations found',
-    adminConfirmDelete: 'Are you sure you want to delete this item?', adminDeleteSuccess: 'Item deleted successfully', adminDeleteError: 'Error deleting item',
+    welcomeDonor: 'Welcome, Donor', welcomeNgo: 'Welcome, NGO', yourDonations: 'Your Donations', claimedDonations: 'Claimed Donations',
   },
   hi: {
     home: 'होम', about: 'हमारे बारे में', contact: 'संपर्क', dashboard: 'डैशबोर्ड', newDonation: 'नया दान', availableFood: 'उपलब्ध भोजन', login: 'लॉग इन करें', logout: 'लॉग आउट', language: 'हिन्दी',
@@ -81,16 +72,7 @@ const translations = {
     contactTitle: 'हमसे संपर्क करें', contactSubtitle: 'हमारी टीम से संपर्क करें',
     contactContent: 'हम आपसे सुनना पसंद करेंगे! किसी भी प्रश्न, सुझाव या साझेदारी के अवसरों के लिए हमसे संपर्क करें।',
     success: 'सफलता!', error: 'त्रुटि!', donationClaimed: 'दान सफलतापूर्वक क्लेम किया गया!', donationError: 'दान क्लेम करने में त्रुटि। कृपया पुन: प्रयास करें।',
-    welcomeDonor: 'स्वागत, दाता', welcomeNgo: 'स्वागत, NGO', welcomeAdmin: 'स्वागत, एडमिन', yourDonations: 'आपके दान', claimedDonations: 'दावा किए गए दान',
-    adminOverview: 'सिस्टम अवलोकन', adminUsers: 'उपयोगकर्ता', adminDonations: 'दान', adminDonors: 'दाता', adminNgos: 'NGOs', adminTotalFood: 'कुल बचाया गया भोजन', adminRecentActivity: 'हाल की गतिविधि',
-    adminUserManagement: 'उपयोगकर्ता प्रबंधन', adminDonorManagement: 'दाता प्रबंधन', adminNgoManagement: 'NGO प्रबंधन', adminDonationManagement: 'दान प्रबंधन',
-    adminUserDetails: 'उपयोगकर्ता विवरण', adminDonorDetails: 'दाता विवरण', adminNgoDetails: 'NGO विवरण', adminDonationDetails: 'दान विवरण',
-    adminEmail: 'ईमेल', adminRole: 'भूमिका', adminStatus: 'स्थिति', adminActions: 'क्रियाएं', adminFoodType: 'भोजन का प्रकार', adminQuantity: 'मात्रा',
-    adminExpiry: 'समाप्ति तिथि', adminClaimedBy: 'द्वारा दावा किया गया', adminCreatedAt: 'निर्मित', adminUpdatedAt: 'अपडेट किया गया',
-    adminActive: 'सक्रिय', adminInactive: 'निष्क्रिय', adminAvailable: 'उपलब्ध', adminClaimed: 'दावा किया गया', adminCompleted: 'पूर्ण',
-    adminView: 'देखें', adminEdit: 'संपादित करें', adminDelete: 'हटाएं', adminRefresh: 'डेटा रीफ्रेश करें', adminExport: 'डेटा निर्यात करें',
-    adminNoUsers: 'कोई उपयोगकर्ता नहीं मिला', adminNoDonors: 'कोई दाता नहीं मिला', adminNoNgos: 'कोई NGO नहीं मिला', adminNoDonations: 'कोई दान नहीं मिला',
-    adminConfirmDelete: 'क्या आप वाकई इस आइटम को हटाना चाहते हैं?', adminDeleteSuccess: 'आइटम सफलतापूर्वक हटा दिया गया', adminDeleteError: 'आइटम हटाने में त्रुटि',
+    welcomeDonor: 'स्वागत, दाता', welcomeNgo: 'स्वागत, NGO', yourDonations: 'आपके दान', claimedDonations: 'दावा किए गए दान',
   },
   mr: {
     home: 'मुख्यपृष्ठ', about: 'आमच्याबद्दल', contact: 'संपर्क', dashboard: 'डॅशबोर्ड', newDonation: 'नवीन दान', availableFood: 'उपलब्ध अन्न', login: 'लॉग इन करा', logout: 'लॉग आउट', language: 'मराठी',
@@ -115,16 +97,7 @@ const translations = {
     contactTitle: 'आमच्याशी संपर्क साधा', contactSubtitle: 'आमच्या टीमसोबत संपर्क साधा',
     contactContent: 'आम्ही तुमच्याकडून ऐकून आनंद होईल! कोणत्याही प्रश्न, सूचना किंवा भागीदारीच्या संधींसाठी आमच्याशी संपर्क साधा.',
     success: 'यश!', error: 'त्रुटी!', donationClaimed: 'दान यशस्वीरित्या क्लेम केले!', donationError: 'दान क्लेम करण्यात त्रुटी. कृपया पुन्हा प्रयत्न करा.',
-    welcomeDonor: 'स्वागत, दाता', welcomeNgo: 'स्वागत, NGO', welcomeAdmin: 'स्वागत, एडमिन', yourDonations: 'तुमचे दान', claimedDonations: 'दावा केलेले दान',
-    adminOverview: 'प्रणाली अवलोकन', adminUsers: 'वापरकर्ते', adminDonations: 'दान', adminDonors: 'दाता', adminNgos: 'NGOs', adminTotalFood: 'एकूण बचलेले अन्न', adminRecentActivity: 'अलीकडील क्रियाकलाप',
-    adminUserManagement: 'वापरकर्ता व्यवस्थापन', adminDonorManagement: 'दाता व्यवस्थापन', adminNgoManagement: 'NGO व्यवस्थापन', adminDonationManagement: 'दान व्यवस्थापन',
-    adminUserDetails: 'वापरकर्ता तपशील', adminDonorDetails: 'दाता तपशील', adminNgoDetails: 'NGO तपशील', adminDonationDetails: 'दान तपशील',
-    adminEmail: 'ईमेल', adminRole: 'भूमिका', adminStatus: 'स्थिती', adminActions: 'क्रिया', adminFoodType: 'अन्नाचा प्रकार', adminQuantity: 'प्रमाण',
-    adminExpiry: 'समाप्ती तारीख', adminClaimedBy: 'द्वारा दावा केले', adminCreatedAt: 'तयार केले', adminUpdatedAt: 'अपडेट केले',
-    adminActive: 'सक्रिय', adminInactive: 'निष्क्रिय', adminAvailable: 'उपलब्ध', adminClaimed: 'दावा केले', adminCompleted: 'पूर्ण झाले',
-    adminView: 'पहा', adminEdit: 'संपादित करा', adminDelete: 'हटवा', adminRefresh: 'डेटा रीफ्रेश करा', adminExport: 'डेटा एक्सपोर्ट करा',
-    adminNoUsers: 'कोणतेही वापरकर्ते आढळले नाहीत', adminNoDonors: 'कोणतेही दाता आढळले नाहीत', adminNoNgos: 'कोणतीही NGO आढळली नाही', adminNoDonations: 'कोणतेही दान आढळले नाही',
-    adminConfirmDelete: 'तुम्हाला खात्री आहे की तुम्ही हे आयटम हटवू इच्छिता?', adminDeleteSuccess: 'आयटम यशस्वीरित्या हटवले', adminDeleteError: 'आयटम हटवण्यात त्रुटी',
+    welcomeDonor: 'स्वागत, दाता', welcomeNgo: 'स्वागत, NGO', yourDonations: 'तुमचे दान', claimedDonations: 'दावा केलेले दान',
   },
 };
 
@@ -185,11 +158,7 @@ const X = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" v
 const MapPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-1 inline-block"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
 const Spinner = () => <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>;
 const Upload = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-gray-400"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
-const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
-const RefreshIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
-const DeleteIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
-const EditIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>;
-const ViewIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>;
+const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-indigo-600"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 
 // === UI COMPONENTS ===
 const Header = ({ setPage, user, setUser }) => {
@@ -259,8 +228,8 @@ const Header = ({ setPage, user, setUser }) => {
                                         e.preventDefault(); 
                                         handleLanguageChange('en')
                                       }} 
-                                      className={`block px-4 py-2 text-sm transition-colors duration-200 ${
-                                        language === 'en' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'
+                                      className={`block px-4 py-2 text-sm transition-colors duration-200 cursor-pointer ${
+                                        language === 'en' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
                                       }`}
                                     >
                                       English
@@ -302,7 +271,7 @@ const Header = ({ setPage, user, setUser }) => {
                         ) : ( 
                           <button 
                             onClick={() => setPage('login')} 
-                            className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:from-indigo-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg transform hover:scale-105 duration-300"
+                            className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:from-indigo-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg transform hover:scale-105 duration-300 cursor-pointer"
                           >
                             {t('login')}
                           </button>
@@ -355,7 +324,7 @@ const Header = ({ setPage, user, setUser }) => {
                         setPage('login'); 
                         setIsMenuOpen(false); 
                       }} 
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors duration-300"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors duration-300 cursor-pointer"
                     >
                       {t('login')}
                     </a>
@@ -385,7 +354,7 @@ const HomePage = ({ setPage, user }) => {
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                         <button 
                           onClick={() => handleActionClick('donationForm')} 
-                          className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-8 py-3 rounded-full font-semibold text-lg hover:from-green-600 hover:to-teal-600 transition-all transform hover:scale-105 duration-300 shadow-lg w-full sm:w-auto animate-none cursor-pointer"
+                          className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-8 py-3 rounded-full font-semibold text-lg hover:from-green-600 hover:to-teal-600 transition-all transform hover:scale-105 duration-300 shadow-lg w-full sm:w-auto cursor-pointer"
                         >
                           {t('donateFood')}
                         </button>
@@ -616,8 +585,7 @@ const Login = ({ setUser, setPage }) => {
                 setUser(userPayload);
                 addToast('Login successful!', 'success');
                 if (userData.role === 'donor') setPage('donorDashboard'); 
-                else if (userData.role === 'ngo') setPage('ngoDashboard');
-                else setPage('adminDashboard');
+                else setPage('ngoDashboard');
             } else {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await setDoc(doc(db, "users", userCredential.user.uid), { 
@@ -632,8 +600,7 @@ const Login = ({ setUser, setPage }) => {
                 setUser(userPayload);
                 addToast('Registration successful!', 'success');
                 if (role === 'donor') setPage('donorDashboard'); 
-                else if (role === 'ngo') setPage('ngoDashboard');
-                else setPage('adminDashboard');
+                else setPage('ngoDashboard');
             }
         } catch (err) {
             const errorMessage = err.message.replace('Firebase: ', '');
@@ -713,7 +680,6 @@ const Login = ({ setUser, setPage }) => {
                                     <option value="">{t('selectRolePlaceholder')}</option>
                                     <option value="donor">{t('roleDonor')}</option>
                                     <option value="ngo">{t('roleNgo')}</option>
-                                    <option value="admin">{t('roleAdmin')}</option>
                                 </select>
                             </div>
                         )}
@@ -776,8 +742,10 @@ const DonorDashboard = ({ user, donations }) => {
                         onClick={() => window.location.reload()} 
                         className="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-md hover:bg-indigo-200 transition-colors duration-300 flex items-center"
                     >
-                        <RefreshIcon />
-                        {t('adminRefresh')}
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Refresh
                     </button>
                 </div>
                 
@@ -930,8 +898,10 @@ const NGODashboard = ({donations, user}) => {
                 onClick={() => window.location.reload()} 
                 className="bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200 transition-colors duration-300 flex items-center"
             >
-                <RefreshIcon />
-                {t('adminRefresh')}
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh
             </button>
         </div>
         
@@ -993,506 +963,35 @@ const NGODashboard = ({donations, user}) => {
 
 const AdminDashboard = () => { 
   const { t } = useTranslation();
-  const { addToast } = useToast();
-  const [users, setUsers] = useState([]);
-  const [donations, setDonations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
-  const [itemType, setItemType] = useState('');
-  
-  // Extract user name from email (before @ symbol)
-  const userName = 'Admin';
-  
-  // Fetch all data from Firestore
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch users
-        const usersSnapshot = await getDocs(collection(db, 'users'));
-        const usersData = usersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setUsers(usersData);
-        
-        // Fetch donations
-        const donationsSnapshot = await getDocs(collection(db, 'donations'));
-        const donationsData = donationsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setDonations(donationsData);
-        
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        addToast('Error fetching data. Please try again.', 'error');
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, []);
-  
-  // Calculate statistics
-  const donorCount = users.filter(user => user.role === 'donor').length;
-  const ngoCount = users.filter(user => user.role === 'ngo').length;
-  const adminCount = users.filter(user => user.role === 'admin').length;
-  const availableDonations = donations.filter(d => d.status === 'Available').length;
-  const claimedDonations = donations.filter(d => d.status === 'Claimed').length;
-  
-  // Handle delete action
-  const handleDelete = async () => {
-    if (!itemToDelete || !itemType) return;
-    
-    try {
-      if (itemType === 'user') {
-        await deleteDoc(doc(db, 'users', itemToDelete));
-        setUsers(users.filter(user => user.id !== itemToDelete));
-      } else if (itemType === 'donation') {
-        await deleteDoc(doc(db, 'donations', itemToDelete));
-        setDonations(donations.filter(donation => donation.id !== itemToDelete));
-      }
-      
-      addToast(t('adminDeleteSuccess'), 'success');
-      setShowDeleteConfirm(false);
-      setItemToDelete(null);
-      setItemType('');
-    } catch (error) {
-      console.error("Error deleting item:", error);
-      addToast(t('adminDeleteError'), 'error');
-    }
-  };
-  
-  // Render the appropriate content based on active tab
-  const renderContent = () => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center h-64">
-          <Spinner />
-          <span className="ml-3 text-lg">Loading data...</span>
-        </div>
-      );
-    }
-    
-    switch (activeTab) {
-      case 'overview':
-        return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-indigo-50 p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-indigo-700">{t('adminUsers')}</h3>
-                <p className="text-3xl font-bold text-indigo-600 mt-2">{users.length}</p>
-                <div className="mt-4 text-sm text-indigo-600">
-                  <div className="flex justify-between">
-                    <span>{t('adminDonors')}:</span>
-                    <span className="font-semibold">{donorCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('adminNgos')}:</span>
-                    <span className="font-semibold">{ngoCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('roleAdmin')}:</span>
-                    <span className="font-semibold">{adminCount}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-green-50 p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-green-700">{t('adminDonations')}</h3>
-                <p className="text-3xl font-bold text-green-600 mt-2">{donations.length}</p>
-                <div className="mt-4 text-sm text-green-600">
-                  <div className="flex justify-between">
-                    <span>{t('adminAvailable')}:</span>
-                    <span className="font-semibold">{availableDonations}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('adminClaimed')}:</span>
-                    <span className="font-semibold">{claimedDonations}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-yellow-700">{t('adminTotalFood')}</h3>
-                <p className="text-3xl font-bold text-yellow-600 mt-2">10,000+ kg</p>
-                <div className="mt-4 text-sm text-yellow-600">
-                  <p>Estimated food saved from waste</p>
-                </div>
-              </div>
-              
-              <div className="bg-purple-50 p-6 rounded-lg shadow-md">
-                <h3 className="text-lg font-semibold text-purple-700">Impact</h3>
-                <p className="text-3xl font-bold text-purple-600 mt-2">5,000+</p>
-                <div className="mt-4 text-sm text-purple-600">
-                  <p>People fed through donations</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-4">{t('adminRecentActivity')}</h2>
-              <div className="space-y-4">
-                {donations.slice(0, 5).map(donation => (
-                  <div key={donation.id} className="flex items-center justify-between p-3 border-b">
-                    <div>
-                      <p className="font-medium">{donation.type} - {donation.quantity}</p>
-                      <p className="text-sm text-gray-500">by {donation.donor}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        donation.status === 'Available' ? 'bg-green-100 text-green-800' : 
-                        donation.status === 'Claimed' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {donation.status}
-                      </span>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {donation.createdAt && new Date(donation.createdAt.seconds * 1000).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {donations.length === 0 && <p className="text-center text-gray-500 py-4">{t('adminNoDonations')}</p>}
-              </div>
-            </div>
-          </div>
-        );
-        
-      case 'users':
-        return (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="p-3">{t('adminEmail')}</th>
-                    <th className="p-3">{t('adminRole')}</th>
-                    <th className="p-3">{t('adminStatus')}</th>
-                    <th className="p-3">{t('adminCreatedAt')}</th>
-                    <th className="p-3">{t('adminActions')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(user => (
-                    <tr key={user.id} className="border-b hover:bg-gray-50">
-                      <td className="p-3">{user.email}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          user.role === 'donor' ? 'bg-blue-100 text-blue-800' : 
-                          user.role === 'ngo' ? 'bg-green-100 text-green-800' : 
-                          'bg-purple-100 text-purple-800'
-                        }`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          user.active === false ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                        }`}>
-                          {user.active === false ? t('adminInactive') : t('adminActive')}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        {user.createdAt && new Date(user.createdAt.seconds * 1000).toLocaleDateString()}
-                      </td>
-                      <td className="p-3">
-                        <div className="flex space-x-2">
-                          <button 
-                            onClick={() => setSelectedItem(user)}
-                            className="text-indigo-600 hover:text-indigo-800"
-                          >
-                            <ViewIcon />
-                          </button>
-                          <button 
-                            onClick={() => {
-                              setItemToDelete(user.id);
-                              setItemType('user');
-                              setShowDeleteConfirm(true);
-                            }}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <DeleteIcon />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {users.length === 0 && <p className="text-center text-gray-500 py-4">{t('adminNoUsers')}</p>}
-            </div>
-          </div>
-        );
-        
-      case 'donations':
-        return (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="p-3">{t('adminFoodType')}</th>
-                    <th className="p-3">{t('adminQuantity')}</th>
-                    <th className="p-3">{t('adminDonor')}</th>
-                    <th className="p-3">{t('adminExpiry')}</th>
-                    <th className="p-3">{t('adminStatus')}</th>
-                    <th className="p-3">{t('adminClaimedBy')}</th>
-                    <th className="p-3">{t('adminActions')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {donations.map(donation => (
-                    <tr key={donation.id} className="border-b hover:bg-gray-50">
-                      <td className="p-3">{donation.type}</td>
-                      <td className="p-3">{donation.quantity}</td>
-                      <td className="p-3">{donation.donor}</td>
-                      <td className="p-3">{donation.expiry}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          donation.status === 'Available' ? 'bg-green-100 text-green-800' : 
-                          donation.status === 'Claimed' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-blue-100 text-blue-800'
-                        }`}>
-                          {donation.status}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        {donation.claimedBy ? 
-                          users.find(u => u.id === donation.claimedBy)?.email || 'Unknown' : 
-                          '-'
-                        }
-                      </td>
-                      <td className="p-3">
-                        <div className="flex space-x-2">
-                          <button 
-                            onClick={() => setSelectedItem(donation)}
-                            className="text-indigo-600 hover:text-indigo-800"
-                          >
-                            <ViewIcon />
-                          </button>
-                          <button 
-                            onClick={() => {
-                              setItemToDelete(donation.id);
-                              setItemType('donation');
-                              setShowDeleteConfirm(true);
-                            }}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <DeleteIcon />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {donations.length === 0 && <p className="text-center text-gray-500 py-4">{t('adminNoDonations')}</p>}
-            </div>
-          </div>
-        );
-        
-      default:
-        return null;
-    }
-  };
-  
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <div className="bg-purple-100 p-3 rounded-full mr-4">
-            <UserIcon />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold">{t('welcomeAdmin')}</h1>
-            <p className="text-gray-600">{userName}</p>
-          </div>
+      <div className="flex items-center mb-6">
+        <div className="bg-purple-100 p-3 rounded-full mr-4">
+          <UserIcon />
         </div>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="bg-purple-100 text-purple-700 px-4 py-2 rounded-md hover:bg-purple-200 transition-colors duration-300 flex items-center"
-        >
-          <RefreshIcon />
-          {t('adminRefresh')}
-        </button>
-      </div>
-      
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'overview'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {t('adminOverview')}
-            </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'users'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {t('adminUserManagement')}
-            </button>
-            <button
-              onClick={() => setActiveTab('donations')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'donations'
-                  ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {t('adminDonationManagement')}
-            </button>
-          </nav>
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-gray-600">System Administrator</p>
         </div>
       </div>
       
-      {renderContent()}
-      
-      {/* Item Detail Modal */}
-      {selectedItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full transform transition-all animate-fade-in-up">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {activeTab === 'users' ? t('adminUserDetails') : t('adminDonationDetails')}
-                </h2>
-                <button 
-                  onClick={() => setSelectedItem(null)} 
-                  className="text-gray-400 hover:text-gray-600 transition-colors duration-300"
-                >
-                  <X />
-                </button>
-              </div>
-              
-              {activeTab === 'users' ? (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminEmail')}</p>
-                      <p className="font-medium">{selectedItem.email}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminRole')}</p>
-                      <p className="font-medium">{selectedItem.role}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminStatus')}</p>
-                      <p className="font-medium">{selectedItem.active !== false ? t('adminActive') : t('adminInactive')}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminCreatedAt')}</p>
-                      <p className="font-medium">
-                        {selectedItem.createdAt && new Date(selectedItem.createdAt.seconds * 1000).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminFoodType')}</p>
-                      <p className="font-medium">{selectedItem.type}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminQuantity')}</p>
-                      <p className="font-medium">{selectedItem.quantity}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminDonor')}</p>
-                      <p className="font-medium">{selectedItem.donor}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminExpiry')}</p>
-                      <p className="font-medium">{selectedItem.expiry}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminStatus')}</p>
-                      <p className="font-medium">{selectedItem.status}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminClaimedBy')}</p>
-                      <p className="font-medium">
-                        {selectedItem.claimedBy ? 
-                          users.find(u => u.id === selectedItem.claimedBy)?.email || 'Unknown' : 
-                          '-'
-                        }
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{t('adminCreatedAt')}</p>
-                      <p className="font-medium">
-                        {selectedItem.createdAt && new Date(selectedItem.createdAt.seconds * 1000).toLocaleString()}
-                      </p>
-                    </div>
-                    {selectedItem.claimedAt && (
-                      <div>
-                        <p className="text-sm text-gray-500">Claimed At</p>
-                        <p className="font-medium">
-                          {new Date(selectedItem.claimedAt.seconds * 1000).toLocaleString()}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {selectedItem.donorImg && (
-                    <div>
-                      <p className="text-sm text-gray-500 mb-2">Image</p>
-                      <img 
-                        src={selectedItem.donorImg} 
-                        alt={selectedItem.type} 
-                        className="w-full h-48 object-cover rounded-lg" 
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4">System Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-indigo-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-indigo-700">Total Users</h3>
+            <p className="text-3xl font-bold text-indigo-600 mt-2">142</p>
+          </div>
+          <div className="bg-green-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-green-700">Total Donations</h3>
+            <p className="text-3xl font-bold text-green-600 mt-2">87</p>
+          </div>
+          <div className="bg-yellow-50 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold text-yellow-700">Active NGOs</h3>
+            <p className="text-3xl font-bold text-yellow-600 mt-2">24</p>
           </div>
         </div>
-      )}
-      
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full transform transition-all animate-fade-in-up">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Confirm Delete</h2>
-              <p className="text-gray-600 mb-6">{t('adminConfirmDelete')}</p>
-              <div className="flex justify-end space-x-4">
-                <button 
-                  onClick={() => setShowDeleteConfirm(false)} 
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-300"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleDelete} 
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
