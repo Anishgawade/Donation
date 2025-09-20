@@ -17,12 +17,12 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarEle
 
 // === FIREBASE CONFIGURATION ===
 const firebaseConfig = {
-    apiKey: "AIzaSyCRejeugh-5qQ4fbvo88jvqHdJq_IMx3l0",
-    authDomain: "food-management-88814.firebaseapp.com",
-    projectId: "food-management-88814",
-    storageBucket: "food-management-88814.firebasestorage.app",
-    messagingSenderId: "711492014909",
-    appId: "1:711492014909:web:f82f23abf7cf6c61c9ab54",
+    apiKey: "AIzaSyA-gF0atpL8f_xE27NA_YbZHurRUkKlHew",
+    authDomain: "food-management-c5aff.firebaseapp.com",
+    projectId: "food-management-c5aff",
+    storageBucket: "food-management-c5aff.firebasestorage.app",
+    messagingSenderId: "829340133934",
+    appId: "1:829340133934:web:6356d9356de9f3d055cdbf",
 };
 
 // Initialize Firebase securely
@@ -515,7 +515,7 @@ const QuickDonateForm = ({ onClose }) => {
                 address: formData.address,
                 location: { lat: 19.0760, lng: 72.8777 }, 
                 status: 'Available',
-                donorImage: imagePreview || `https://source.unsplash.com/400x400/?${formData.foodType.split(' ').join(',').toLowerCase()}`,
+                donorImage: imagePreview || null,
                 createdAt: serverTimestamp(),
             });
             
@@ -642,6 +642,8 @@ const QuickDonateForm = ({ onClose }) => {
                                             <Image 
                                                 src={imagePreview} 
                                                 alt="Preview" 
+                                                width={128}
+                                                height={128}
                                                 className="h-32 w-32 object-cover rounded-lg mb-2" 
                                             />
                                             <button 
@@ -819,11 +821,19 @@ const ListingsPage = ({donations, quickDonations, user}) => {
                   key={donation.id} 
                   className="bg-white p-4 rounded-xl shadow-md border flex items-center gap-4 transition-all duration-300 hover:shadow-xl hover:border-indigo-300"
                 >
-                  <Image 
-                    src={donation.donorImage} 
-                    alt={donation.type} 
-                    className="w-20 h-20 rounded-lg object-cover transition-transform duration-300 hover:scale-105"
-                  />
+                  {donation.donorImage ? (
+                    <Image 
+                      src={donation.donorImage} 
+                      alt={donation.type} 
+                      width={80}
+                      height={80}
+                      className="w-20 h-20 rounded-lg object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-lg bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-xs">No Image</span>
+                    </div>
+                  )}
                   <div className="flex-grow">
                     <h3 className="font-bold text-lg text-indigo-700">{donation.donor || donation.donorName}</h3>
                     <p className="text-gray-600">{donation.type} - {donation.quantity}</p>
@@ -1539,11 +1549,15 @@ const DonationViewModal = ({ donation, onClose }) => {
                       </button>
                     </div>
                     <div className="mt-4">
-                      <Image 
-                        src={donation.donorImage} 
-                        alt={donation.type} 
-                        className="w-full h-48 object-cover rounded-lg mb-4" 
-                      />
+                      {donation.donorImage && (
+                        <Image 
+                          src={donation.donorImage} 
+                          alt={donation.type} 
+                          width={400}
+                          height={192}
+                          className="w-full h-48 object-cover rounded-lg mb-4" 
+                        />
+                      )}
                       <h3 className="text-xl font-semibold text-indigo-700">{donation.type}</h3>
                       <p className="text-gray-600">from <span className="font-medium">{donation.donor || donation.donorName}</span></p>
                       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
@@ -2471,6 +2485,8 @@ const AdminDashboard = () => {
                       <Image 
                         src={selectedItem.donorImage} 
                         alt={selectedItem.type} 
+                        width={400}
+                        height={192}
                         className="w-full h-48 object-cover rounded-lg" 
                       />
                     </div>
@@ -2554,7 +2570,7 @@ const DonationForm = ({ setPage, user }) => {
                 address: formData.address,
                 location: { lat: 19.0760, lng: 72.8777 }, 
                 status: 'Available',
-                donorImage: imagePreview || `https://source.unsplash.com/400x400/?${formData.foodType.split(' ').join(',').toLowerCase()}`,
+                donorImage: imagePreview || null,
                 createdAt: serverTimestamp(),
             });
             setIsSubmitting(false); 
@@ -2656,6 +2672,8 @@ const DonationForm = ({ setPage, user }) => {
                           <Image 
                             src={imagePreview} 
                             alt="Preview" 
+                            width={128}
+                            height={128}
                             className="h-32 w-32 object-cover rounded-lg mb-2" 
                           />
                           <button 
@@ -2730,6 +2748,8 @@ const AboutPage = () => {
               <Image 
                 src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80" 
                 alt="About FoodSave" 
+                width={800}
+                height={600}
                 className="w-full h-full object-cover"
               />
             </div>
