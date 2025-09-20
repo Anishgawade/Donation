@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 // Firebase Imports for database and authentication
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, signInWithEmailLink, sendSignInLinkToEmail, isSignInWithEmailLink, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, addDoc, query, onSnapshot, doc, getDoc, setDoc, updateDoc, serverTimestamp, getDocs, deleteDoc, where } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaUser, FaEnvelope, FaUtensils, FaMapMarkerAlt, FaCalendarAlt, FaCamera, FaPaperPlane, FaGlobe, FaBars, FaTimes, FaSpinner, FaSync, FaTrash, FaEdit, FaEye, FaLock, FaChartPie, FaChartBar } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaUtensils, FaMapMarkerAlt, FaCamera, FaPaperPlane, FaGlobe, FaBars, FaTimes, FaSpinner, FaSync, FaTrash, FaEye, FaLock, FaChartPie, FaChartBar } from 'react-icons/fa';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
+import Image from 'next/image';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -514,7 +515,7 @@ const QuickDonateForm = ({ onClose }) => {
                 address: formData.address,
                 location: { lat: 19.0760, lng: 72.8777 }, 
                 status: 'Available',
-                donorImg: imagePreview || `https://source.unsplash.com/400x400/?${formData.foodType.split(' ').join(',').toLowerCase()}`,
+                donorImage: imagePreview || `https://source.unsplash.com/400x400/?${formData.foodType.split(' ').join(',').toLowerCase()}`,
                 createdAt: serverTimestamp(),
             });
             
@@ -638,7 +639,7 @@ const QuickDonateForm = ({ onClose }) => {
                                 <div className="space-y-1 text-center">
                                     {imagePreview ? (
                                         <div className="flex flex-col items-center">
-                                            <img 
+                                            <Image 
                                                 src={imagePreview} 
                                                 alt="Preview" 
                                                 className="h-32 w-32 object-cover rounded-lg mb-2" 
@@ -818,8 +819,8 @@ const ListingsPage = ({donations, quickDonations, user}) => {
                   key={donation.id} 
                   className="bg-white p-4 rounded-xl shadow-md border flex items-center gap-4 transition-all duration-300 hover:shadow-xl hover:border-indigo-300"
                 >
-                  <img 
-                    src={donation.donorImg} 
+                  <Image 
+                    src={donation.donorImage} 
                     alt={donation.type} 
                     className="w-20 h-20 rounded-lg object-cover transition-transform duration-300 hover:scale-105"
                   />
@@ -1538,8 +1539,8 @@ const DonationViewModal = ({ donation, onClose }) => {
                       </button>
                     </div>
                     <div className="mt-4">
-                      <img 
-                        src={donation.donorImg} 
+                      <Image 
+                        src={donation.donorImage} 
                         alt={donation.type} 
                         className="w-full h-48 object-cover rounded-lg mb-4" 
                       />
@@ -2464,11 +2465,11 @@ const AdminDashboard = () => {
                     )}
                   </div>
                   
-                  {selectedItem.donorImg && (
+                  {selectedItem.donorImage && (
                     <div>
                       <p className="text-sm text-gray-500 mb-2">Image</p>
-                      <img 
-                        src={selectedItem.donorImg} 
+                      <Image 
+                        src={selectedItem.donorImage} 
                         alt={selectedItem.type} 
                         className="w-full h-48 object-cover rounded-lg" 
                       />
@@ -2553,7 +2554,7 @@ const DonationForm = ({ setPage, user }) => {
                 address: formData.address,
                 location: { lat: 19.0760, lng: 72.8777 }, 
                 status: 'Available',
-                donorImg: imagePreview || `https://source.unsplash.com/400x400/?${formData.foodType.split(' ').join(',').toLowerCase()}`,
+                donorImage: imagePreview || `https://source.unsplash.com/400x400/?${formData.foodType.split(' ').join(',').toLowerCase()}`,
                 createdAt: serverTimestamp(),
             });
             setIsSubmitting(false); 
@@ -2652,7 +2653,7 @@ const DonationForm = ({ setPage, user }) => {
                     <div className="space-y-1 text-center">
                       {imagePreview ? (
                         <div className="flex flex-col items-center">
-                          <img 
+                          <Image 
                             src={imagePreview} 
                             alt="Preview" 
                             className="h-32 w-32 object-cover rounded-lg mb-2" 
@@ -2726,7 +2727,7 @@ const AboutPage = () => {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:w-1/2">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80" 
                 alt="About FoodSave" 
                 className="w-full h-full object-cover"
